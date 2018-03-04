@@ -1,0 +1,35 @@
+1. Bring the wrench to the lug nuts
+
+/*
+	to do this we need to figure out a way to make the wrench clickable
+	and have the wrech follow the mouse upon the click
+
+*/
+
+2. We need to be able to choose a lug nut to work on
+
+/*
+	need to make the lug nuts clickable once the wrench has been equiped
+	this could be done through a boolean; wrenchEquiped = true;
+	EX: if (pointerListener = GetComponent(wrench))
+			wrenchEquiped = true;
+
+		if (pointerListener = GetComponent(lugNut) && wrenchEquiped)
+			//call some kind of function that initiates the rotating part of the minigame
+
+			rotateLug(lugNut);
+
+	*Need to learn pointerListener function
+	*Write a rotation function for selected lug nuts
+		-Instantiate wrench at the lug nut's tranform
+		-Creating a pivot point at the lug nut's tranform
+		-Win condition: must be rotated 1080 degrees counterclockwise
+	*Lug nut removal animation
+	*Destory lugNut
+	*Begin process over again until all lug nuts are removed
+		-Could be monitored with a For || While loop or through simple sequence method
+		-Loops would use less code; would have to figure out a algorithm
+		-Could use a counter for each lug nut that is removed. Once the counter hits 5 the sequence would end.
+
+*/
+
