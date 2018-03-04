@@ -1,0 +1,86 @@
+//pseudo for tire mini-game
+
+//win condition: Player must replace with new tire and fasten 5 lug nuts
+
+Main Module
+
+End module
+
+Update Module
+
+Declare int boltCount
+Declare gameObj oldBolt, flatTire, newTire, newBolt //set to global
+Declare boolean removeFlat, replaceFlat, flatChanged = false
+Declare real tireTransform = position(x, y, z) //figure out this location
+
+while (!flatChanged)
+
+	if click == bolt
+
+		Set boltCount = boltCount + 1
+		Call destroy(bolt) //destroys clicked bolt
+		/*
+			future plans:
+			eventually will call an animation to play on bolt
+			ideally will allow player to rotate bolt in future prototypes
+			have inventory GUI where player can drag bolts to keep or have them show up in after clicking/unscrewing
+		*/
+
+
+		else if boltCount == 5
+
+			Set flatTire = clickable //creates clickable tire in same transform as old
+
+			else if click == flatTire
+
+				Set removeFlat = true
+				Call destroy(flatTire)
+				Set newTire = clickable //will have to research this possibility
+
+				else if click == newTire
+
+					Set transform.newTire = tireTransform
+					Set newTire = !clickable //keep user from moving tire again
+					Set newBolt = clickable
+					Set replaceFlat = true
+
+					else if replaceFlat
+
+						Call replaceBolts()
+						Set flatChanged = true
+
+						else
+
+							Display "still not complete"
+
+						end if else
+
+
+End while
+
+Display "Great job! You're ready to go."
+
+End module
+
+
+
+Module void replaceBolts()
+
+	Declare boolean boltsReplaced = false
+	Declare int boltCount
+
+	while (!boltsReplaced)
+
+		if click == newBolt && boltCount < 5
+
+			Set newBolt = new.Transform //may have to use a switch table for this part
+
+			else
+
+				Set boltsReplaced = true
+
+		end if else
+
+	End while
+	
+End module
