@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
 
 public class TireChange : MonoBehaviour {
 
@@ -8,6 +9,7 @@ public class TireChange : MonoBehaviour {
 	public bool removeFlat, replaceFlat, flatChanged, removeBolt = false; //will be used to make items "clickable"
 	public Vector3 tireTransform = new Vector3(0, 0, 0); //this tells the newTire gameObj where to go
 	public Vector3 boltTransform = new Vector3(0, 0, 0); 
+	public Button boltBtn, tireBtn, newTireBtn, newBoltBtn;
 	
 	void Start() {
 
@@ -22,7 +24,7 @@ public class TireChange : MonoBehaviour {
 
 				boltCount = boltCount + 1;
 				Destroy(oldBolt);
-				Destroy(Button("bolt"));
+				//Destroy(GUI.Button("bolt"));
 
 				} else if (boltCount == 1) { //this will be 5 in later version
 
@@ -32,13 +34,13 @@ public class TireChange : MonoBehaviour {
 
 						removeFlat = true;
 						Destroy(flatTire);
-						Destroy(Button("tire"));
+						//Destroy(GUI.Button("tire"));
 
 						} else if(Input.GetButtonDown("new tire")) {
 
 							//will already have gameobj for "new tire" positioned to the side
 							newTire.transform.position = tireTransform;
-							Destroy(Button("new tire"));
+							//Destroy(Button("new tire"));
 							replaceFlat = true;
 
 							} else if(replaceFlat) {
@@ -60,10 +62,17 @@ public class TireChange : MonoBehaviour {
 
 	void OnGUI() {
 
+		//creates bolt button
 		GUI.Button(new Rect(10, 10, 10, 10), "bolt");
+		Button boltButton = boltBtn.GetComponent<Button>();
 
-		if(removeBolt)
+		if(removeBolt) { //once all bolts are "removed" removeBolt is set to true
+
+			boltButton.enabled = false; //disables button from before
 			GUI.Button(new Rect(20, 10, 10, 20), "tire");
+			Button tireButton = tireBtn.GetComponent<Button>();
+
+		}
 
 		if(removeFlat)
 			GUI.Button(new Rect(30, 10, 10, 10), "new tire");
@@ -76,7 +85,7 @@ public class TireChange : MonoBehaviour {
 	void ReplaceBolts() {
 
 		bool boltsReplaced = false;
-		int boltCount;
+		int boltCount = 0;
 
 		while(!boltsReplaced) {
 
@@ -94,3 +103,4 @@ public class TireChange : MonoBehaviour {
 		}
 
 	}
+}
