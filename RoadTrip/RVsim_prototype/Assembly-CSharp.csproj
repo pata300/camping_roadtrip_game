@@ -54,6 +54,7 @@
      <Compile Include="Assets\Scripts\CollisionDetect.cs" />
      <Compile Include="Assets\Scripts\MousePos.cs" />
      <Compile Include="Assets\Scripts\RotateWrench.cs" />
+     <Compile Include="Assets\Scripts\TireChange.cs" />
  <Reference Include="Facebook.Unity.Settings">
  <HintPath>/Users/patrickgriffin/Documents/GitHub/camping_roadtrip_game/RoadTrip/RVsim_prototype/Library/FacebookSDK/Facebook.Unity.Settings.dll</HintPath>
  </Reference>
