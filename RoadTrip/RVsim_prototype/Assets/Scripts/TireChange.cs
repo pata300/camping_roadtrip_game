@@ -5,100 +5,212 @@ using UnityEngine.UI;
 public class TireChange : MonoBehaviour {
 
 	public int boltCount; //this is used to determind if the tire can be clicked
-	public GameObject oldBolt, flatTire, newTire, newBolt; //all the gameobj to be used in minigame
-	public bool removeFlat, replaceFlat, flatChanged, removeBolt = false; //will be used to make items "clickable"
+	public int newBoltCount; 
+	public GameObject[] bolts, newBolt;
+	public GameObject flatTire, newTire; //all the gameobj to be used in minigame
+	public bool flatRemoved, flatReplaced, flatChanged, removeBolt = false; //will be used to make items "clickable"
 	public Vector3 tireTransform = new Vector3(0, 0, 0); //this tells the newTire gameObj where to go
 	public Vector3 boltTransform = new Vector3(0, 0, 0); 
 	public Button boltBtn, tireBtn, newTireBtn, newBoltBtn;
 	
 	void Start() {
 
+		//constructs first bolt button at beginning of game
+		//adds a listener for click
+		Button boltButton = boltBtn.GetComponent<Button>();
+		boltButton.onClick.AddListener(BoltOnClick);
+
+		//construct tire button obj and disable it on start
+		Button tireButton = tireBtn.GetComponent<Button>();
+		tireButton.gameObject.SetActive(false); //code to make buttons visable and disappear
+
+		//disable other buttons on start
+		//new tire settings
+		Button newTireButton = newTireBtn.GetComponent<Button>();
+		newTireButton.gameObject.SetActive(false);
+		//newTire.SetActive(false);
+
+		//new bolt settings
+		Button newBoltButton = newBoltBtn.GetComponent<Button>();
+		newBoltButton.gameObject.SetActive(false);
+		
+		for(int x = 0; x <= 4; x++) {
+
+			newBolt[x].SetActive(false);
+
+		}
+
+
 	}
 
 	void Update() {
 
-		while (!flatChanged) {
+		if (boltCount == 5) { //this will be 5 in later version
 
-			//will loop while flatChanged remains false
-			if(Input.GetButtonDown("bolt")) { //may just put in a long && sequence || a if/else sequence
+		 		boltCount++;
+		 		Button tireButton = tireBtn.GetComponent<Button>();
+		 		tireButton.gameObject.SetActive(removeBolt);
+		 		tireButton.onClick.AddListener(TireOnClick);
 
-				boltCount = boltCount + 1;
-				Destroy(oldBolt);
-				//Destroy(GUI.Button("bolt"));
+		 }
 
-				} else if (boltCount == 1) { //this will be 5 in later version
+		if(flatRemoved) {
 
-					removeBolt = true;
+			flatRemoved = false; //ends if loop
 
-					} else if(Input.GetButtonDown("tire")) {
+			Button newTireButton = newTireBtn.GetComponent<Button>();
+			newTireBtn.gameObject.SetActive(true); //activates new tire button
 
-						removeFlat = true;
-						Destroy(flatTire);
-						//Destroy(GUI.Button("tire"));
+			newTireButton.onClick.AddListener(NewTireOnClick);
 
-						} else if(Input.GetButtonDown("new tire")) {
+		}
 
-							//will already have gameobj for "new tire" positioned to the side
-							newTire.transform.position = tireTransform;
-							//Destroy(Button("new tire"));
-							replaceFlat = true;
+		if(flatReplaced) {
 
-							} else if(replaceFlat) {
+			flatReplaced = false;
 
-								ReplaceBolts();
-								flatChanged = true;
+			Button newBoltButton = newBoltBtn.GetComponent<Button>();
+			newBoltBtn.gameObject.SetActive(true);
 
-								} else {
+			newBoltButton.onClick.AddListener(NewBoltOnClick);
 
-									Debug.Log("Still not complete.");
+		}
 
-									}
+		if(flatChanged) {
 
-		} 
+			Debug.Log("Great job! You're ready to go."); //user has completed minigame
+			Debug.Log("Game Over");
+			flatChanged = false;
 
-		Debug.Log("Great job! You're ready to go."); //user has completed minigame
+		}
 
 	}
 
 	void OnGUI() {
 
-		//creates bolt button
-		GUI.Button(new Rect(10, 10, 10, 10), "bolt");
-		Button boltButton = boltBtn.GetComponent<Button>();
-
-		if(removeBolt) { //once all bolts are "removed" removeBolt is set to true
-
-			boltButton.enabled = false; //disables button from before
-			GUI.Button(new Rect(20, 10, 10, 20), "tire");
-			Button tireButton = tireBtn.GetComponent<Button>();
-
-		}
-
-		if(removeFlat)
-			GUI.Button(new Rect(30, 10, 10, 10), "new tire");
-
-		if(replaceFlat)
-			GUI.Button(new Rect(40, 10, 10, 10), "new bolt");
 
 	}
 
-	void ReplaceBolts() {
+	// void ReplaceBolts() {
 
-		bool boltsReplaced = false;
-		int boltCount = 0;
+	// 	bool boltsReplaced = false;
+	// 	int boltCount = 0;
 
-		while(!boltsReplaced) {
+	// 	while(!boltsReplaced) {
 
-			if(Input.GetButtonDown("new bolt") && boltCount < 1) { //will change to 5 in later version
+	// 		if(GUI.Button(new Rect(), "new bolt button") && boltCount < 1) { //will change to 5 in later version
 
-				newBolt.transform.position = boltTransform;
-				boltCount = boltCount + 1;
+	// 			//newBolt.transform.position = boltTransform;
+	// 			boltCount = boltCount + 1;
 
-			} else {
+	// 		} else {
 
-				boltsReplaced = true;
+	// 			boltsReplaced = true;
 
-			}
+	// 		}
+
+	// 	}
+
+	// }
+
+	//listener function
+	void BoltOnClick() {
+
+		Debug.Log("bolt button clicked");
+		//GameObject bolt = bolts.GetComponent<GameObject>();
+		//no need to construct a gameobj object in prior line
+		//instead of destorying asset I simply disable it
+		//unity warns that .active is "obsolete" but works fine
+		bolts[boltCount].active = false;
+		newBolt[boltCount].SetActive(true); //makes bolts pop up in inventory
+
+		//Destroy(bolts[boltCount]);
+		boltCount = boltCount + 1;
+
+		if(boltCount >= 5) {
+			//Destroy(oldBolt);
+			Button boltButton = boltBtn.GetComponent<Button>(); //construct button again to disable
+			//Destroy(GUI.Button("bolt")); instead of destroying the button I disable it in the next line
+			//can also use Destroy(boltButton) for same effect as next line
+			//need to figure out a way to make the button disappear from player view
+			boltButton.enabled = false; //disables button from before
+
+			//boltBtnBool = false; no need
+			//to make bolt button disappear
+			boltButton.gameObject.SetActive(false);
+
+			//boltButton.active = false; .active does not apply to button components
+			Destroy(boltButton.gameObject);
+
+			//makes tire button active
+			removeBolt = true;
+		}
+
+	}
+
+	void TireOnClick() {
+
+		Debug.Log("old tire removed");
+
+		//Destroy(flatTire);
+		flatTire.active = false; //makes tire disappear
+
+		Button tBtn = tireBtn.GetComponent<Button>();
+		tBtn.enabled = false;
+		tBtn.gameObject.SetActive(false);
+
+		flatRemoved = true; //marks that flat has been removed
+
+
+	}
+
+	void NewTireOnClick() {
+
+		Debug.Log("replaced tire");
+
+		flatRemoved = false;
+
+		newTire.SetActive(false);
+		flatTire.SetActive(true);
+
+
+
+		Button newTBtn = newTireBtn.GetComponent<Button>();
+		newTBtn.enabled = false;
+		newTBtn.gameObject.SetActive(false);
+
+		flatReplaced = true;
+
+	}
+
+	void NewBoltOnClick() {
+
+		Debug.Log("bolt fastedned");
+
+		bolts[newBoltCount].SetActive(true);
+		newBolt[newBoltCount].SetActive(false); //takes bolts from inventory and fastens tire
+
+		newBoltCount = newBoltCount + 1;
+
+		if(newBoltCount >= 5) {
+
+			Debug.Log("all bolts fastened");
+
+			//Destroy(oldBolt);
+			Button newBoltButton = newBoltBtn.GetComponent<Button>(); //construct button again to disable
+			//Destroy(GUI.Button("bolt")); instead of destroying the button I disable it in the next line
+			//can also use Destroy(boltButton) for same effect as next line
+			//need to figure out a way to make the button disappear from player view
+			newBoltButton.enabled = false; //disables button from before
+
+			//boltBtnBool = false; no need
+			//to make bolt button disappear
+			newBoltButton.gameObject.SetActive(false);
+
+			//boltButton.active = false; .active does not apply to button components
+			//Destroy(newBoltButton.gameObject);
+
+			flatChanged = true;
 
 		}
 
