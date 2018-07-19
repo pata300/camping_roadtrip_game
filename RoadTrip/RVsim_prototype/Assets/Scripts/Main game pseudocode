@@ -1,0 +1,599 @@
+Main game pseudocode
+
+/*
+
+Game logic (basic)
+player starts with 5k
+random events that will cost time and resources
+You can do most trips from major city to major city in less than a day
+Player must tank up at stops to avoid running out of gas
+Define minigame/event chances
+	These would be broken down into seperate module/functions
+If it gets too late you will be required to stop traveling and sleep
+	Cap is 2AM
+	*AMENDMENT* 6/15 (Advance logic)
+	Possibly change this to a "playerEnergy" system. Allowing the playercharacter to drive for X amount of hours. This would be dependent on the playercharacter's amount of sleep and any items (coffee, energy drinks, candy) used to keep player awake longer. Could lead to negative punishments for overuse of energy items (sickness, hallucinations, aggressive behavior, drop in charisma/stats)
+Logic from Point A >> Point B
+	Game gets travel time
+		Addes to timeOfDay
+	Shows player amount of gas needed
+		Allows player to purchase more fuel
+	RNG is called for possible event
+		Minigame/event is displayed to player
+	Move the sprite from point A to point B on world map
+	Disable previous location in prototype version for logic reasons
+
+
+
+*Advanced logic*
+game has calendar system
+Each trip will have its own specific amount of gas intake
+Player sleep time
+Get low gas alert and allow player to stop at any time to tank up
+Player inventory
+
+Variables
+	float playerMoney = 5000
+	Integer timeOfDay 
+		//if(timeOfDay >= 13) display timeOfDay - 12, " PM"
+		//if(timeOfDay >=25) timeOfDay = 1
+		//display timeOfDay, " AM"
+		//code for some kind of checkTime() later in the code
+
+*/
+
+/*
+
+Scripting notes
+
+virtual and overriding
+	virtual is used in any methods in the parent class, while override is use in 
+	following child classes to add to parent method
+
+Member hiding (using new before methods/functions)
+	this is the opposite of overriding. Putting "new" before you methods will
+	keep method from running and only run the parent class method
+	Unsure on why this would be used...
+
+*/
+
+//City class ***seperate script***
+//reference: https://unity3d.com/learn/tutorials/topics/scripting/inheritance?playlist=17117
+
+City Class //base class
+
+	Public CONSTANT Integer TRIPCOST, TRAVELTIME, FUELNEEDED
+	Public String cityName
+
+	Public City()
+
+		TRIPCOST = 50
+		TRAVELTIME = 4
+		FUELNEEDED = 150
+
+		Set cityName = "base city"
+
+		Display "Base City variables set"
+
+	End Module
+
+	Public City(String newCity) //example of module overriding
+
+		Set cityName = newCity //Allow you to keep track of which city you're in
+
+	End Module
+	
+	Public Integer getMoney(Integer playerMoney) //Function updates the player's cash after the trip cost
+
+		Set playerMoney = playerMoney - TRIPCOST
+		Return playerMoney
+
+	End Function
+
+
+	Public Integer getTime(Integer timeOfDay) //returns the time of the day
+
+		Set timeOfDay = checkTime(timeOfDay + TRAVELTIME)
+		Returm timeOfDay
+
+	End Function
+
+	
+	Public Integer getFuel(Integer playerFuel) //returns of the amount of fuel left
+
+		Set playerFuel = playerFuel - FUELNEEDED
+		Return playerFuel
+
+	End Function
+
+	Public Integer setLocation() //returns the player's location
+
+		Set playerLocation = null
+		Return playerLocation
+
+	End Function
+
+End Class
+
+//City X, Y, Z class; all inherit from City Class
+
+//City X ***seperate script***
+XCity Class of City Class
+
+	Public XCity()
+
+		Set cityName = "X City"
+		Display "You are in X City"
+
+	End Module
+
+	//example of module overriding by sending variable to base class
+	Public XCity(String newCity) : base(newCity) 
+
+		Set cityName = newCity //Allow you to keep track of which city you're in
+
+	End Module
+
+	Public Integer setLocation() //might have to write this as another module override***
+
+		Set playerLocation = 1
+		Return playerLocation
+
+	End Function
+
+End Class
+
+//City Y ***seperate script***
+YCity Class of City Class
+
+	Public YCity()
+
+		Set cityName = "Y City"
+		Display "You are in Y City"
+
+	End Module
+
+	Public YCity(String newCity) : base(newCity) //example of module overriding
+
+		Set cityName = newCity //Allow you to keep track of which city you're in
+
+	End Module
+
+	Public Integer setLocation()
+
+		Set playerLocation = 2
+		Return playerLocation
+
+	End Function
+
+End Class
+
+//City Z ***seperate script***
+ZCity Class of City Class
+
+	Public ZCity()
+
+		Set cityName = "Z City"
+		Display "You are in Z City"
+
+	End Module
+
+	Public ZCity(String newCity) : base(newCity) //example of module overriding
+
+		Set cityName = newCity //Allow you to keep track of which city you're in
+
+	End Module
+
+	Public Integer setLocation()
+
+		Set playerLocation = 3
+		Return playerLocation
+
+	End Function
+
+End Class
+
+
+/*
+
+ALL ABOVE SCRIPT HAS BEEN WRITTEN
+STOPPING POINT
+7/18
+
+*/
+
+	
+
+//Game loop program begins
+
+
+TripEvents Class of MonoBehaviour
+
+	//global variables
+	Integer playerMoney = 1000 //use a rounded float in later version
+	Integer timeOfDay = 6
+	Integer dayCount = 1
+	Integer playerFuel = 300
+	Integer playerLocation = 0
+	Boolean confirmTravel = false
+	Boolean timeAM = true
+	Boolean gameComplete = false
+
+	Module Start()
+
+		//construct the city classes
+		Display "Constructing Base City"
+		City baseCity = new City();
+
+		Display "Constructing X City"
+		XCity xCity = new XCity();
+
+		Display "Constucting Y City"
+		YCity yCity = new YCity();
+
+		Display "Constucting Z City"
+		ZCity zCity = new ZCity();
+
+		Display playerMoney
+		Set timeOfDay = checkTime(timeOfDay);
+		Display timeOfDay
+		Display playerFuel
+
+	End Module
+
+
+	Module Update()
+
+		/*
+		Listen for city button click
+		//switch struture
+		//lots of improvements will go into this
+		//does not account for traveling backwards
+		//prototype will not allow player to travel backwards
+		*/
+		
+		While NOT gameComplete //while the game isn't complete, program listens for mouseclicks
+
+			Switch (mouseListener)
+
+				Case cityXBtn
+
+					Display "Are you sure you would like to travel here? y/n"
+
+					If (trueBtn == clicked)
+
+						Set confirmTravel = true
+
+					Else Break
+
+					//**ask player if they want to tank up before traveling
+					//Call tankUp()
+
+					If (confirmTravel && playerLocation == 0)
+
+						Set confirmTravel = false
+
+						Call getCityX() //module that calls function from XCity class
+
+						Call diplayTime()
+						Display "Day ", dayCount
+
+						Display "Money $", playerMoney
+						Display "Fuel ", playerFuel
+
+					End If
+
+				Break
+
+				Case cityYBtn
+
+					Display "Are you sure you would like to travel here? y/n"
+
+					If (trueBtn == clicked)
+
+						Set confirmTravel = true
+
+					Else Break
+
+					If (confirmTravel)
+
+					Set confirmTravel = false
+
+					If (playerLocation == 0)
+
+						Call getCityX()
+						Call getCityY()
+
+						Call diplayTime()
+						Display "Day ", dayCount
+
+						Display "Money $", playerMoney
+						Display "Fuel ", playerFuel
+
+					Else
+
+						Call getCityY()
+
+						Call diplayTime()
+						Display "Day ", dayCount
+
+						Display "Money $", playerMoney
+						Display "Fuel ", playerFuel
+
+					End If
+
+				Break
+
+				Case cityZBtn
+
+					Display "Are you sure you would like to travel here? y/n"
+
+					If (trueBtn == clicked)
+
+						Set confirmTravel = true
+
+					Else Break
+
+					If (confirmTravel)
+
+					Set confirmTravel = false
+
+					If playerLocation == 0
+
+						Call getCityX()
+						Call getCityY()
+						Call getCityZ()
+
+						Call diplayTime()
+						Display "Day ", dayCount
+
+						Display "Money $", playerMoney
+						Display "Fuel ", playerFuel
+
+					Else If playerLocation == 1
+
+						Call getCityY()
+						Call getCityZ()
+
+						Call diplayTime()
+						Display "Day ", dayCount
+
+						Display "Money $", playerMoney
+						Display "Fuel ", playerFuel
+
+					Else
+
+						Call getCityZ()
+
+						Call diplayTime()
+						Display "Day ", dayCount
+
+						Display "Money $", playerMoney
+						Display "Fuel ", playerFuel
+
+						//Ends game
+						Set gameComplete = True
+
+					End If
+
+				Break
+
+
+				Default
+					Display "What is your destination?"
+
+			End Switch
+
+		End While
+
+		Display "Congrats!"
+		Display "You have made it to your destination."
+		Display "Thanks for playing."
+
+
+	End Module
+
+	//simple module that make sure time is displayed in non-military time
+	//and never runs over 24 hours
+	//I already added time of day with trip time in the parameters
+	Function Integer checkTime(Integer tripTime)
+
+		If (tripTime == 12)
+
+			Set timeAM = false
+			Return tripTime
+
+				Else If (tripTime == 24)
+
+					Set timeAM = true
+					Increment dayCount++
+					Return tripTime
+
+					Else If(tripTime >= 25)
+
+						Set tripTime = tripTime - 24
+						Set timeAM = true
+						Increment dayCount++
+						Return tripTime
+
+				Else If (tripTime > 12)
+
+					Set timeAM = false
+					Return tripTime
+
+			Else (tripTime <= 11) 
+
+				Set timeAM = true
+				Return tripTime
+
+		End If
+
+	End Function
+
+	Module displayTime()
+
+		If (timeAM && timeOfDay == 24)
+
+				Display "Time: ", timeOfDay - 12, " AM" //midnight
+				Set timeOfDay = 0
+
+					Else If (timeAM)
+
+						Display "Time: ", timeOfDay, " AM"
+
+				Else If (!timeAM && timeOfDay == 12)
+
+					Display "Time: ", timeOfDay, " PM" //noon
+				
+			Else Display "Time: ", timeOfDay - 12, " PM"
+
+		End If
+
+	End Module
+
+	Module getCityX()
+
+		Set playerMoney = cityX.getMoney(playerMoney)
+		Set timeOfDay = cityX.getTime(timeOfDay)
+		Set playerFuel = cityX.getFuel(playerFuel)
+		Set playerLocation = cityX.setLocation()
+
+	End Module
+
+	Module getCityY()
+
+		Set playerMoney = cityY.getMoney(playerMoney)
+		Set timeOfDay = cityY.getTime(timeOfDay)
+		Set playerFuel = cityY.getFuel(playerFuel)
+		Set playerLocation = cityY.setLocation()
+
+	End Module
+
+	Module getCityZ()
+
+		Set playerMoney = cityZ.getMoney(playerMoney)
+		Set timeOfDay = cityZ.getTime(timeOfDay)
+		Set playerFuel = cityZ.getFuel(playerFuel)
+		Set playerLocation = cityZ.setLocation()
+
+	End Module
+
+
+End Class
+
+
+
+***REDUNDANT CODE***
+//keeping for documentation reasons
+
+/*
+
+This code was turned in to a class/inherited system
+
+//these modules will process the amount of money and fuel a trip will decrease and time will increase
+	Module cityX()
+
+		CONSTANT Integer TRIPCOST = 50
+		CONSTANT Integer TRAVELTIME = 4
+		CONSTANT Integer FUELNEEDED = 150
+
+		Set playerMoney = playerMoney - TRIPCOST
+
+		Set timeOfDay = checkTime(timeOfDay + TRAVELTIME)
+
+		Set playerFuel = playerFuel - FUELNEEDED
+
+		Set playerLocation = 1
+		
+
+	End Module
+
+	Module cityY()
+
+		CONSTANT Integer TRIPCOST = 50
+		CONSTANT Integer TRAVELTIME = 4
+		CONSTANT Integer FUELNEEDED = 150
+
+		Set playerMoney = playerMoney - TRIPCOST
+
+		Set timeOfDay = checkTime(timeOfDay + TRAVELTIME)
+
+		Set playerFuel = playerFuel - FUELNEEDED
+
+		Set playerLocation = 2
+
+	End Module
+
+	Module cityZ()
+
+		CONSTANT Integer TRIPCOST = 50
+		CONSTANT Integer TRAVELTIME = 4
+		CONSTANT Integer FUELNEEDED = 150
+
+		Set playerMoney = playerMoney - TRIPCOST
+
+		Set timeOfDay = checkTime(timeOfDay + TRAVELTIME)
+
+		Set playerFuel = playerFuel - FUELNEEDED
+
+		Set gameComplete = true
+
+	End Module
+
+	Case cityYBtn
+
+					Display "Are you sure you would like to travel here? y/n"
+
+					If (trueBtn == clicked)
+
+						Set confirmTravel = true
+
+					Else Break
+
+					If (confirmTravel)
+
+					Set confirmTravel = false
+
+					If playerLocation == 0
+
+						Call cityX(Ref playerMoney, Ref timeOfDay, Ref playerFuel)
+						Call cityY(Ref playerMoney, Ref timeOfDay, Ref playerFuel)
+
+					Else
+
+						Call cityY(Ref playerMoney, Ref timeOfDay, Ref playerFuel)
+
+				Case cityZBtn
+
+					Display "Are you sure you would like to travel here? y/n"
+
+					If (trueBtn == clicked)
+
+						Set confirmTravel = true
+
+					Else Break
+
+					If (confirmTravel)
+
+					Set confirmTravel = false
+
+					If playerLocation == 0
+
+						Call cityX(Ref playerMoney, Ref timeOfDay, Ref playerFuel)
+						Call cityY(Ref playerMoney, Ref timeOfDay, Ref playerFuel)
+						Call cityZ(Ref playerMoney, Ref timeOfDay, Ref playerFuel)
+
+					Else If playerLocation == 1
+
+						Call cityY(Ref playerMoney, Ref timeOfDay, Ref playerFuel)
+						Call cityZ(Ref playerMoney, Ref timeOfDay, Ref playerFuel)
+
+					Else
+
+						Call cityZ(Ref playerMoney, Ref timeOfDay, Ref playerFuel)
+						Set gameComplete = True
+
+				Default
+					Display "What is your destination?"
+
+*/
