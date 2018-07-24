@@ -215,7 +215,9 @@ TripEvents Class of MonoBehaviour
 	Integer dayCount = 1
 	Integer playerFuel = 300
 	Integer playerLocation = 0
-	Boolean confirmTravel = false
+	Boolean confirmTravel = null
+	//nullable bool
+	//https://stackoverflow.com/questions/5362437/assign-null-value-to-boolean-variable 
 	Boolean timeAM = true
 	Boolean gameComplete = false
 
@@ -275,15 +277,14 @@ TripEvents Class of MonoBehaviour
 
 						Call getCityX() //module that calls function from XCity class
 
-						Call diplayTime()
-						Display "Day ", dayCount
-
-						Display "Money $", playerMoney
-						Display "Fuel ", playerFuel
+						Call displayTime()
+						Call displayPlayerStats()
 
 					End If
 
 				Break
+
+***7/23 STOPPED HERE***
 
 				Case cityYBtn
 
@@ -304,21 +305,15 @@ TripEvents Class of MonoBehaviour
 						Call getCityX()
 						Call getCityY()
 
-						Call diplayTime()
-						Display "Day ", dayCount
-
-						Display "Money $", playerMoney
-						Display "Fuel ", playerFuel
+						Call displayTime()
+						Call displayPlayerStats()
 
 					Else
 
 						Call getCityY()
 
-						Call diplayTime()
-						Display "Day ", dayCount
-
-						Display "Money $", playerMoney
-						Display "Fuel ", playerFuel
+						Call displayTime()
+						Call displayPlayerStats()
 
 					End If
 
@@ -345,31 +340,22 @@ TripEvents Class of MonoBehaviour
 						Call getCityZ()
 
 						Call diplayTime()
-						Display "Day ", dayCount
-
-						Display "Money $", playerMoney
-						Display "Fuel ", playerFuel
+						Call displayPlayerStats()
 
 					Else If playerLocation == 1
 
 						Call getCityY()
 						Call getCityZ()
 
-						Call diplayTime()
-						Display "Day ", dayCount
-
-						Display "Money $", playerMoney
-						Display "Fuel ", playerFuel
+						Call displayTime()
+						Call displayPlayerStats()
 
 					Else
 
 						Call getCityZ()
 
-						Call diplayTime()
-						Display "Day ", dayCount
-
-						Display "Money $", playerMoney
-						Display "Fuel ", playerFuel
+						Call displayTime()
+						Call displayPlayerStats()
 
 						//Ends game
 						Set gameComplete = True
@@ -451,10 +437,19 @@ TripEvents Class of MonoBehaviour
 
 	End Module
 
+	Module displayPlayerStats()
+
+		Display "Day ", dayCount
+		Display "Money $", playerMoney
+		Display "Fuel ", playerFuel
+
+	End Module
+
 	Module getCityX()
 
 		Set playerMoney = cityX.getMoney(playerMoney)
 		Set timeOfDay = cityX.getTime(timeOfDay)
+		Set timeOfDay = checkTime(timeOfDay)
 		Set playerFuel = cityX.getFuel(playerFuel)
 		Set playerLocation = cityX.setLocation()
 
@@ -464,6 +459,7 @@ TripEvents Class of MonoBehaviour
 
 		Set playerMoney = cityY.getMoney(playerMoney)
 		Set timeOfDay = cityY.getTime(timeOfDay)
+		Set timeOfDay = checkTime(timeOfDay)
 		Set playerFuel = cityY.getFuel(playerFuel)
 		Set playerLocation = cityY.setLocation()
 
@@ -473,6 +469,7 @@ TripEvents Class of MonoBehaviour
 
 		Set playerMoney = cityZ.getMoney(playerMoney)
 		Set timeOfDay = cityZ.getTime(timeOfDay)
+		Set timeOfDay = checkTime(timeOfDay)
 		Set playerFuel = cityZ.getFuel(playerFuel)
 		Set playerLocation = cityZ.setLocation()
 
