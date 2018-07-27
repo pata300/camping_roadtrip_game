@@ -17,6 +17,8 @@ public class TripEvents : MonoBehaviour //this is the game loop
 	public Button cityXBtn, cityYBtn, cityZBtn, trueBtn, falseBtn;
 	public int cityChoice; //variable for string to use for swtich structure
 
+	public bool playerChoice; //to confirm player clicked a prompt
+
 
 	void Start()
 	{
@@ -87,11 +89,20 @@ public class TripEvents : MonoBehaviour //this is the game loop
 				buttons or disabled
 				confirmTravel boolean is nullified
 				player stats and time is updated and displayed
-				if not true, case breaks out of switch structure 
+				if not true, case breaks out of switch structure
+
+		7/26
+			session notes
+				added getChoice() module
+				*this module simple asked user for a yes or no decision propt
+				and does not end till user makes decision (in theory, haven't used this function before)
+				setTrue()/setFalse() modules not disable y/n buttons and end getChoice()
+				this frees up a little space in the cases
 
 	*/
 	void Update()
 	{
+
 
 		//game loop begins
 		while(!gameComplete) //while the game isn't complete, program listens for mouse clicks
@@ -105,6 +116,12 @@ public class TripEvents : MonoBehaviour //this is the game loop
 					//can't null an int without ?
 					//city x
 					cityChoice = 0;
+
+					//call function to get player decision
+					//ADDED 7/26
+					getChoice();
+
+					/*
 					Debug.Log("Are you sure you would like to travel here? y/n");
 
 					//make the yes and no buttons active
@@ -122,6 +139,9 @@ public class TripEvents : MonoBehaviour //this is the game loop
 					//will have to write 'while loop' for yes/no prompt
 					//otherwise game loopw will fall through and always
 					//believe decision is false
+
+					OLD CODE 7/26
+					*/
 
 					if(confirmTravel == true && playerLocation == 0)
 					{
@@ -148,7 +168,9 @@ public class TripEvents : MonoBehaviour //this is the game loop
 							I'll figure out how to play an animation of the
 							RV sprite moving to the correct location later
 						*/
-					} else break;
+					} else Debug.Log("Invalid travel. Pick again.");
+
+						break;
 					//if player hits no/false btn or location is somthing other than location 0
 					//the game will ask the player for a selection
 
@@ -162,6 +184,21 @@ public class TripEvents : MonoBehaviour //this is the game loop
 				case 2:
 					//change cityChoice to null
 					//city y
+
+					cityChoice = 0;
+					Debug.Log("Are you sure you would like to travel here? y/n");
+
+					//make the yes and no buttons active
+					Button tButton = trueBtn.GetComponent<Button>();
+					tButton.onClick.AddListener(SetTrue);
+					tButton.gameObject.SetActive(true);
+					//these are set to false until the game loop ask the player
+
+					Button fButton = falseBtn.GetComponent<Button>();
+					fButton.onClick.AddListener(SetFalse);
+					fButton.gameObject.SetActive(true);
+
+
 					break;
 
 				case 3:
@@ -214,6 +251,19 @@ public class TripEvents : MonoBehaviour //this is the game loop
 
 		confirmTravel = true;
 
+		//disable buttons
+		//make the yes and no buttons active
+		Button tButton = trueBtn.GetComponent<Button>();
+		tButton.onClick.AddListener(SetTrue);
+		tButton.gameObject.SetActive(false);
+		//these are set to false until the game loop ask the player
+
+		Button fButton = falseBtn.GetComponent<Button>();
+		fButton.onClick.AddListener(SetFalse);
+		fButton.gameObject.SetActive(false);
+
+		playerChoice = true;
+
 	}
 
 	//this module does the exact opposite of it's brother module during the confirmation prompt
@@ -222,6 +272,49 @@ public class TripEvents : MonoBehaviour //this is the game loop
 
 		confirmTravel = false;
 
+		//disable buttons
+		//make the yes and no buttons active
+		Button tButton = trueBtn.GetComponent<Button>();
+		tButton.onClick.AddListener(SetTrue);
+		tButton.gameObject.SetActive(false);
+		//these are set to false until the game loop ask the player
+
+		Button fButton = falseBtn.GetComponent<Button>();
+		fButton.onClick.AddListener(SetFalse);
+		fButton.gameObject.SetActive(false);
+
+		playerChoice = true;
+
 	}
+
+	void getChoice()
+	{
+
+
+		Debug.Log("Are you sure you would like to travel here? y/n");
+
+		//make the yes and no buttons active
+		Button tButton = trueBtn.GetComponent<Button>();
+		tButton.onClick.AddListener(SetTrue);
+		tButton.gameObject.SetActive(true);
+		//these are set to false until the game loop ask the player
+
+		Button fButton = falseBtn.GetComponent<Button>();
+		fButton.onClick.AddListener(SetFalse);
+		fButton.gameObject.SetActive(true);
+
+		WaitWhile(!playerChoice); //"waits" while player makes choice
+
+		playerChoice = false; //set up for next loop
+
+		//buttons are active
+		//if confirmTravel can not be set to null
+		//will have to write 'while loop' for yes/no prompt
+		//otherwise game loopw will fall through and always
+		//believe decision is false
+
+	}
+
+
 
 }
