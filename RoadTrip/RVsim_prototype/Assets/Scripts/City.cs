@@ -14,7 +14,7 @@ public class City //base class
 
 		//default cost to travel from city to city
 		TRIPCOST = 50;
-		TRAVELTIME = 4;
+		TRAVELTIME = 7;
 		FUELNEEDED = 150;
 
 		cityName = "base city";
@@ -42,8 +42,10 @@ public class City //base class
 	public int getTime(int timeOfDay) //returns the time of the day
 	{
 
-		timeOfDay = checkTime(timeOfDay + TRAVELTIME);
+		timeOfDay = timeOfDay + TRAVELTIME;
 		return timeOfDay;
+
+
 
 	}
 
